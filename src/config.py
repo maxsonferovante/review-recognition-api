@@ -15,3 +15,6 @@ config = OdmProvider(
     },
     document_models=[Recognition, Review],
 )
+
+
+version = "0.0.2"
