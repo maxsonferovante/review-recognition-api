@@ -1,6 +1,6 @@
-# PyNest service
+# API Review Recognition
 
-This is a template for a PyNest service.
+The Review Recognition API is an application that allows the analysis and extraction of information from reviews in PDF format.
 
 ## Start Service
 
@@ -28,4 +28,4 @@ uvicorn "app:app" --host "0.0.0.0" --port "8000" --reload
 
 ## Step 3 - Send requests
 
-Go to the fastapi docs and use your api endpoints - http://127.0.0.1/docs
+Go to the fastapi docs and use your api endpoints - http://127.0.0.1/api/docs

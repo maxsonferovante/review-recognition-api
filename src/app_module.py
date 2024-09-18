@@ -17,7 +17,7 @@ class AppModule:
 
 app = PyNestFactory.create(
     AppModule,
-    description="A API Review Recognition é uma aplicação que permite a análise e extração de informações de reviews de fichas em formato PDF.",
+    description="The Review Recognition API is an application that allows the analysis and extraction of information from reviews in PDF format.",
     title="API Review Recognition",
     version=version,
     debug=True,
