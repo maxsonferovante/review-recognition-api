@@ -23,3 +23,28 @@ class FileTypeNotAllowed(HTTPException):
                 }
             ]
         )
+        
+class RecognitionNotFound(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=404, detail=
+                         [
+                {
+                    "loc": ["recognition"],
+                    "msg": "Recognition not found",
+                    "type": "recognition"
+                }
+            ]
+        )
+
+
+class InternalServerError(HTTPException):
+    def __init__(self, detail):
+        super().__init__(status_code=500, detail=
+                         [
+                {
+                    "loc": ["internal"],
+                    "detail": detail,
+                    "type": "internal"
+                }
+            ]
+        )        
