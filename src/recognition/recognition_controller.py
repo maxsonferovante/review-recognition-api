@@ -26,6 +26,5 @@ class RecognitionController:
         return {
                 "recognition_id": recognition_id,
                 "file": file.filename,
-                "size": len(file.file.read()),
                 "extension": file.filename.split(".")[-1]
             }
