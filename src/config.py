@@ -7,7 +7,7 @@ from src.review.review_entity import Review
 load_dotenv()
 config = OdmProvider(
     config_params={
-        "db_name": os.getenv("DB_NAME", "default_nest_db"),
+        "db_name": os.getenv("DB_NAME", "review_recognition"),
         "host": os.getenv("DB_HOST", "localhost"),
         "user": os.getenv("DB_USER", "root"),
         "password": os.getenv("DB_PASSWORD", "root"),
