@@ -10,7 +10,9 @@ class RecognitionService:
     @db_request_handler
     async def add_recognition(self, recognition: Recognition):
         new_recognition = RecognitionEntity(
-            **recognition.dict()
+            created_at = recognition.created_at,
+            file_name = recognition.file_name,
+            id = recognition.id
         )
         await new_recognition.save()
         return new_recognition.id
