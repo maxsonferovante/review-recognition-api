@@ -1,16 +1,25 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
+from enum import Enum
+
 import unicodedata
 import uuid
 
+#enum de estados de processamento
 
+class RecognitionStatus(str, Enum):
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
 class Recognition(BaseModel):    
     created_at: datetime = Field(default_factory=datetime.now, init=False)
     id: Optional[str] = Field(init=False, default=None)
     file_name: str
     extension: str
+    status: RecognitionStatus = Field(default=RecognitionStatus.PENDING, init=False)
     
     def __init__(self, **data):
         super().__init__(**data)
