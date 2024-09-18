@@ -1,3 +1,4 @@
+from typing import List
 from nest.core import Controller, Get, Post
 from fastapi import UploadFile
 from .recognition_service import RecognitionService
@@ -12,19 +13,20 @@ class RecognitionController:
         self.service = service
 
     @Get("/")
-    async def get_recognition(self):
+    async def get_recognition(self) -> List[Recognition]:
         return await self.recognition_service.get_recognition()
 
     @Post("/upload")
-    async def add_recognition(self, file: UploadFile):        
+    async def add_recognition(self, file: UploadFile) -> Recognition:        
         validate_file_size(file)
         validate_file_type(file)
-            
-        file_name = file.filename        
-        recognition = Recognition(file_name=file_name)        
+                      
+        recognition = Recognition(
+            file_name=file.filename, 
+            extension=file.filename.split(".")[-1])        
+        
         recognition_id = await self.recognition_service.add_recognition(recognition)
-        return {
-                "recognition_id": recognition_id,
-                "file": file.filename,
-                "extension": file.filename.split(".")[-1]
-            }
+        
+        recognition.id = recognition_id
+        
+        return recognition
