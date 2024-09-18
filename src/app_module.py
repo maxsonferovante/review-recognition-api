@@ -1,5 +1,5 @@
 from nest.core import PyNestFactory, Module
-from .config import config
+from .config import config, version
 from .app_controller import AppController
 from .app_service import AppService
 from src.recognition.recognition_module import RecognitionModule
@@ -17,9 +17,9 @@ class AppModule:
 
 app = PyNestFactory.create(
     AppModule,
-    description="This is my Async PyNest app.",
-    title="PyNest Application",
-    version="1.0.0",
+    description="The Review Recognition API is an application that allows the analysis and extraction of information from reviews in PDF format.",
+    title="API Review Recognition",
+    version=version,
     debug=True,
     docs_url="/api/docs"
 )
