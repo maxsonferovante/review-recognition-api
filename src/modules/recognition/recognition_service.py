@@ -17,7 +17,8 @@ class RecognitionService:
         new_recognition = RecognitionEntity(
             created_at = recognition.created_at,
             file_name = recognition.file_name,
-            extension = recognition.extension
+            extension = recognition.extension,
+            status = recognition.status
         )
         await new_recognition.save()
         return new_recognition.id
