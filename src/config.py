@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from nest.core.database.odm_provider import OdmProvider
-from src.recognition.recognition_entity import Recognition
-from src.review.review_entity import Review
+from src.modules.recognition.recognition_entity import Recognition
+from src.modules.review.review_entity import Review
 
 load_dotenv()
 config = OdmProvider(

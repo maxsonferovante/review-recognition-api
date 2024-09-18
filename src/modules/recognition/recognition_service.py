@@ -1,7 +1,7 @@
 from .recognition_model import Recognition
 from .recognition_entity import Recognition as RecognitionEntity
 from .recognition_entity import mongo_recognition_to_pydantic
-from src.character_recognition.character_recognition_service import CharacterRecognitionService
+from src.modules.character_recognition.character_recognition_service import CharacterRecognitionService
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
 

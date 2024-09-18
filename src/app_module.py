@@ -2,8 +2,8 @@ from nest.core import PyNestFactory, Module
 from .config import config, version
 from .app_controller import AppController
 from .app_service import AppService
-from src.recognition.recognition_module import RecognitionModule
-from src.review.review_module import ReviewModule
+from src.modules.recognition.recognition_module import RecognitionModule
+from src.modules.review.review_module import ReviewModule
 
 
 @Module(
