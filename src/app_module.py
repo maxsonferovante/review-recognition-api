@@ -5,6 +5,7 @@ from .app_service import AppService
 from src.modules.recognition.recognition_module import RecognitionModule
 from src.modules.review.review_module import ReviewModule
 
+from src.middlewares.rate_limit_middleware import RateLimitMiddleware
 
 @Module(
     imports=[RecognitionModule, ReviewModule],
@@ -23,8 +24,10 @@ app = PyNestFactory.create(
     debug=True,
     docs_url="/api/docs"
 )
+
 http_server = app.get_server()
 
+http_server.add_middleware(RateLimitMiddleware, max_requests=50, window_seconds=60)
 
 @http_server.on_event("startup")
 async def startup():
