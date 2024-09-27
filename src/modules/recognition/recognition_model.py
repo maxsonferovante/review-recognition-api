@@ -33,5 +33,13 @@ class Recognition(BaseModel):
         if name == 'id':
             value = str(value)
         super().__setattr__(name, value)
-        
 
+    # quando for serializar para json, o id será convertido para string e a data para isoformat
+    def dict(self):
+        return {
+            "id": str(self.id),
+            "file_name": self.file_name,
+            "extension": self.extension,
+            "status": self.status,
+            "created_at": self.created_at.isoformat()
+        }    

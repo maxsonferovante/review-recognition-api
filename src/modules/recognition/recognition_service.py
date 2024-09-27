@@ -1,7 +1,6 @@
 from .recognition_model import Recognition
 from .recognition_entity import Recognition as RecognitionEntity
 from .recognition_entity import mongo_recognition_to_pydantic
-from src.modules.character_recognition.character_recognition_service import CharacterRecognitionService
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
 
@@ -9,8 +8,8 @@ from nest.core import Injectable
 @Injectable
 class RecognitionService:
     
-    def __init__(self, character_recognition_service: CharacterRecognitionService):
-        self.character_recognition_service = character_recognition_service
+    def __init__(self):
+        pass
     
     @db_request_handler
     async def add_recognition(self, recognition: Recognition):
@@ -34,3 +33,10 @@ class RecognitionService:
             
         return list_recognition                
 
+    @db_request_handler
+    async def get_recognition_by_id(self, id: str):
+        result = await RecognitionEntity.get(id)
+        if result:
+            recognitionDict = mongo_recognition_to_pydantic(result)
+            return Recognition(**recognitionDict)
+        return None
