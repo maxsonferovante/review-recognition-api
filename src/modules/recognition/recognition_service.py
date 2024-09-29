@@ -1,5 +1,5 @@
 from .recognition_model import Recognition
-from .recognition_entity import Recognition as RecognitionEntity
+from .recognition_entity import Recognition as RecognitionEntity, RecognitionStatus
 from .recognition_entity import mongo_recognition_to_pydantic
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
@@ -12,7 +12,7 @@ class RecognitionService:
         pass
     
     @db_request_handler
-    async def add_recognition(self, recognition: Recognition):
+    async def add_recognition(self, recognition: Recognition) -> str:
         new_recognition = RecognitionEntity(
             created_at = recognition.created_at,
             file_name = recognition.file_name,
@@ -40,3 +40,11 @@ class RecognitionService:
             recognitionDict = mongo_recognition_to_pydantic(result)
             return Recognition(**recognitionDict)
         return None
+    
+    @db_request_handler
+    async def update_status_recognition(self, id: str, status: str):        
+        if status == RecognitionStatus.COMPLETED or status == RecognitionStatus.FAILED:
+            result = await RecognitionEntity.get(id)
+            if result:
+                result.status = status
+                await result.save()
