@@ -41,7 +41,7 @@ class ProcessingRecognition(BaseModel):
 # class que representa o reconhecimento concluído
 class CompletedRecognition(BaseModel):
     id: str
-    status: str = Field(default="COMPLETED", init=False)
+    status: str = Field(default=RecognitionStatus.COMPLETED, init=False)
     data: Dict
     updated_at: datetime = Field(default_factory=datetime.now, init=False)
     
