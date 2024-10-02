@@ -20,6 +20,7 @@ class Recognition(BaseModel):
     file_name: str
     extension: str
     status: RecognitionStatus = Field(default=RecognitionStatus.PENDING, init=False)
+    data: Optional[dict] = Field(default=None)
     
     def __init__(self, **data):
         super().__init__(**data)
@@ -41,5 +42,6 @@ class Recognition(BaseModel):
             "file_name": self.file_name,
             "extension": self.extension,
             "status": self.status,
+            "data": self.data,
             "created_at": self.created_at.isoformat()
         }    

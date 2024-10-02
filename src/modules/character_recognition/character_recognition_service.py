@@ -1,15 +1,21 @@
 from nest.core import Injectable
+from fastapi import UploadFile
 from src.modules.recognition.recognition_model import RecognitionStatus
+from src.modules.recognition.recognition_entity import Recognition as RecognitionEntity
 from .character_recognition_model import ProcessingRecognition, CompletedRecognition, ProcessingRecognitions, CompletedRecognitions
 
 import time
 from datetime import datetime
+
+import os
 
 @Injectable
 class CharacterRecognitionService:
     # Uma instância de ProcessingRecognitions para manter a lista de reconhecimentos em andamento
     processing_recognitions = ProcessingRecognitions()
     completed_recognitions = CompletedRecognitions()
+
+   
     def run(self, id: str):
         try:
             # Adiciona uma nova entrada na lista de reconhecimentos em processamento
@@ -80,3 +86,11 @@ class CharacterRecognitionService:
         else:
             print(f"Recognition {id} not found")
 
+    def save_file_in_disk(self, file: UploadFile, file_name: str, path_to_save: str):
+        # Salva um arquivo no disco na pasta temp, que está na raiz do projeto
+        #  usa path_to_save como nome da pasta onde o arquivo será salvo
+        with open(f"temp/{path_to_save}/{file_name}", "wb") as f:
+            os.makedirs(f"temp/{path_to_save}", exist_ok=True)
+            f.write(file)
+            f.close()
+            print(f"File {file_name} saved in disk")
