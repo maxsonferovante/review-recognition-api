@@ -1,11 +1,10 @@
 from typing import List
 from nest.core import Controller, Get, Post
-from fastapi import UploadFile, BackgroundTasks
+from fastapi import UploadFile
 from src.modules.character_recognition.character_recognition_service import CharacterRecognitionService
 from src.modules.character_recognition.character_recognition_model import ProcessingRecognition, CompletedRecognition
 from .recognition_service import RecognitionService
 from .recognition_model import Recognition, RecognitionStatus
-from .recognition_validation import validate_file_type, validate_file_size
 from .recognition_exceptions import RecognitionNotFound
 from .recognition_http_response import AcceptedResponse, ProcessingResponse, CompletedResponse
 
@@ -39,15 +38,6 @@ class RecognitionController:
         return CompletedResponse(content=recognition)
     
     @Post("/upload")
-    async def add_recognition(self, file: UploadFile, background_tasks: BackgroundTasks) -> AcceptedResponse:        
-        validate_file_size(file)
-        validate_file_type(file)
-                      
-        recognition = Recognition(
-            file_name=file.filename, 
-            extension=file.filename.split(".")[-1])        
-    
-        recognition.id = await self.recognition_service.add_recognition(recognition)
-        background_tasks.add_task(self.character_recognition_service.run, recognition.id)
-        
+    async def add_recognition(self, file: UploadFile) -> AcceptedResponse:                              
+        recognition = await self.recognition_service.add_recognition(file)        
         return AcceptedResponse(recognition)

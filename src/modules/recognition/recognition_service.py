@@ -1,18 +1,29 @@
 from .recognition_model import Recognition
 from .recognition_entity import Recognition as RecognitionEntity, RecognitionStatus
 from .recognition_entity import mongo_recognition_to_pydantic
+
+from src.modules.character_recognition.character_recognition_service import CharacterRecognitionService
+from src.providers.black_blaze_bucket_file import BlackBlazeBucketFile
+
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
 
+from fastapi import UploadFile
 
 @Injectable
 class RecognitionService:
     
-    def __init__(self):
-        pass
+    def __init__(self, character_recognition_service: CharacterRecognitionService,
+                        updateBucketFile: BlackBlazeBucketFile):
+        self.character_recognition_service = character_recognition_service
+        self.updateBucketFile = updateBucketFile
     
     @db_request_handler
-    async def add_recognition(self, recognition: Recognition) -> str:
+    async def add_recognition(self, file: UploadFile) -> Recognition:
+        recognition = Recognition(
+            file_name=file.filename, 
+            extension=file.filename.split(".")[-1])        
+        
         new_recognition = RecognitionEntity(
             created_at = recognition.created_at,
             file_name = recognition.file_name,
@@ -20,7 +31,22 @@ class RecognitionService:
             status = recognition.status
         )
         await new_recognition.save()
-        return new_recognition.id
+        recognition.id = new_recognition.id
+        # self.character_recognition_service.save_file_in_disk(
+        #     file = file,
+        #     file_name=recognition.file_name,
+        #     path_to_save=recognition.id
+        # )
+        
+        url = await self.updateBucketFile.upload_file(file=file, recognition_id=recognition.id, file_name=recognition.file_name)
+        
+        update_recognition = await RecognitionEntity.get(recognition.id)
+        update_recognition.data = {"url": url}
+        await update_recognition.save()
+        # self.character_recognition_service.run(id=recognition.id)
+        
+        # await self.updateBucketFile.download_file(recognition_id=recognition.id, file_name=recognition.file_name)
+        return recognition
 
     @db_request_handler
     async def get_recognition(self):
@@ -48,3 +74,4 @@ class RecognitionService:
             if result:
                 result.status = status
                 await result.save()
+    
