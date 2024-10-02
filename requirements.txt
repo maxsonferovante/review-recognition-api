@@ -1,3 +1,4 @@
 pynest-api==0.3.1
 beanie==1.20.0
 python-multipart==0.0.9
+boto3==1.35.30
