@@ -1,9 +1,11 @@
 from typing import List
-from nest.core import Controller, Get, Post
+from nest.core import Controller, Get, Post, Put
 from fastapi import UploadFile
+
+from src.modules.recognition.recognition_exceptions import RecognitionNotFound
 from .recognition_service import RecognitionService
 from .recognition_model import Recognition
-from .recognition_http_response import AcceptedResponse, CompletedResponse
+from .recognition_http_response import AcceptedResponse, CompletedResponse, UpdateResponse
 from src.modules.recognition.recognition_http_response import AcceptedResponse, CompletedResponse
 
 @Controller("recognition")
@@ -12,12 +14,18 @@ class RecognitionController:
     def __init__(self, recognition_service: RecognitionService):
         self.recognition_service = recognition_service
           
-    @Get("/")
+    @Get("/all")
     async def get_recognition(self) -> List[Recognition]:
         response = await self.recognition_service.get_recognition()
-        return CompletedResponse(content=response)
+        return CompletedResponse(message="Recognition list",content=response)
         
     @Post("/upload")
     async def add_recognition(self, file: UploadFile) -> AcceptedResponse:                              
         recognition = await self.recognition_service.add_recognition(file)        
         return AcceptedResponse(recognition)
+    
+    @Put("/status/{id}")
+    async def update_status_recognition(self, id: str, status: str) -> UpdateResponse:
+        await self.recognition_service.update_status_recognition(id, status)        
+        return UpdateResponse({"id": id,"status": status})
+        
