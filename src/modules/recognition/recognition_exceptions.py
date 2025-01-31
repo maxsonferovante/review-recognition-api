@@ -23,7 +23,19 @@ class FileTypeNotAllowed(HTTPException):
                 }
             ]
         )
-        
+
+class StatusNotRecognized(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=422, detail=
+                         [
+                {
+                    "loc": ["status"],
+                    "msg": "Status not recognized",
+                    "type": "status"
+                }
+            ]
+        )
+
 class RecognitionNotFound(HTTPException):
     def __init__(self):
         super().__init__(status_code=404, detail=

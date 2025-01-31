@@ -1,3 +1,6 @@
+
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
 from nest.core import PyNestFactory, Module
 from .config import config, version
 from .app_controller import AppController
@@ -16,13 +19,19 @@ class AppModule:
     pass
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await config.create_all()
+    yield
+
 app = PyNestFactory.create(
     AppModule,
     description="The Review Recognition API is an application that allows the analysis and extraction of information from reviews in PDF format.",
     title="API Review Recognition",
     version=version,
     debug=True,
-    docs_url="/api/docs"
+    docs_url="/api/docs",
+    lifespan=lifespan,
 )
 
 http_server = app.get_server()
@@ -32,7 +41,3 @@ http_server = app.get_server()
 http_server.add_middleware(RateLimitMiddleware, max_requests=50, window_seconds=60)
 #  - RecognitionValidationMiddleware: Validate the file type and size of the uploaded file.
 http_server.add_middleware(RecognitionValidationMiddleware)
-
-@http_server.on_event("startup")
-async def startup():
-    await config.create_all()

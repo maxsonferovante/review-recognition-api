@@ -1,10 +1,8 @@
-from .recognition_model import Recognition
-from .recognition_entity import Recognition as RecognitionEntity, RecognitionStatus
+from src.modules.recognition.recognition_exceptions import RecognitionNotFound, StatusNotRecognized
+from .recognition_model import Recognition, RecognitionStatus
+from .recognition_entity import Recognition as RecognitionEntity
 from .recognition_entity import mongo_recognition_to_pydantic
-
-from src.modules.character_recognition.character_recognition_service import CharacterRecognitionService
 from src.providers.black_blaze_bucket_file import BlackBlazeBucketFile
-
 from nest.core.decorators.database import db_request_handler
 from nest.core import Injectable
 
@@ -13,9 +11,7 @@ from fastapi import UploadFile
 @Injectable
 class RecognitionService:
     
-    def __init__(self, character_recognition_service: CharacterRecognitionService,
-                        updateBucketFile: BlackBlazeBucketFile):
-        self.character_recognition_service = character_recognition_service
+    def __init__(self,updateBucketFile: BlackBlazeBucketFile):
         self.updateBucketFile = updateBucketFile
     
     @db_request_handler
@@ -31,22 +27,13 @@ class RecognitionService:
             status = recognition.status
         )
         await new_recognition.save()
-        recognition.id = new_recognition.id
-        # self.character_recognition_service.save_file_in_disk(
-        #     file = file,
-        #     file_name=recognition.file_name,
-        #     path_to_save=recognition.id
-        # )
-        
-        url = await self.updateBucketFile.upload_file(file=file, recognition_id=recognition.id, file_name=recognition.file_name)
-        
+        recognition.id = new_recognition.id       
+        url = await self.updateBucketFile.upload_file(file=file, recognition_id=recognition.id, file_name=recognition.file_name)        
         update_recognition = await RecognitionEntity.get(recognition.id)
         update_recognition.data = {"url": url}
         await update_recognition.save()
-        # self.character_recognition_service.run(id=recognition.id)
         
-        # await self.updateBucketFile.download_file(recognition_id=recognition.id, file_name=recognition.file_name)
-        return recognition
+        return Recognition(**mongo_recognition_to_pydantic(update_recognition))
 
     @db_request_handler
     async def get_recognition(self):
@@ -55,7 +42,7 @@ class RecognitionService:
             
         for recognitionDocument in result:
             recognitionDict = mongo_recognition_to_pydantic(recognitionDocument)                
-            list_recognition.append(Recognition(**recognitionDict))  
+            list_recognition.append(Recognition(**recognitionDict).dict())  
             
         return list_recognition                
 
@@ -68,10 +55,16 @@ class RecognitionService:
         return None
     
     @db_request_handler
-    async def update_status_recognition(self, id: str, status: str):        
-        if status == RecognitionStatus.COMPLETED or status == RecognitionStatus.FAILED:
-            result = await RecognitionEntity.get(id)
-            if result:
-                result.status = status
-                await result.save()
+    async def update_status_recognition(self, id: str, status: str):                
+        # validate status value
+        if status not in RecognitionStatus.__members__:
+            return StatusNotRecognized()
+        
+        result = await RecognitionEntity.get(id)
+        if result:
+            result.set(expression="status", value=status)               
+            await result.save()
+        else:
+            raise RecognitionNotFound()
+
     
