@@ -28,5 +28,6 @@ def mongo_recognition_to_pydantic(document: Recognition) -> Dict:
         "created_at": document.created_at,
         "file_name": document.file_name,
         "extension": document.extension,
+        "status": document.status,
         "data": document.data,
     }
