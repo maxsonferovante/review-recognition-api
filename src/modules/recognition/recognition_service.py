@@ -1,5 +1,6 @@
-from .recognition_model import Recognition
-from .recognition_entity import Recognition as RecognitionEntity, RecognitionStatus
+from src.modules.recognition.recognition_exceptions import RecognitionNotFound, StatusNotRecognized
+from .recognition_model import Recognition, RecognitionStatus
+from .recognition_entity import Recognition as RecognitionEntity
 from .recognition_entity import mongo_recognition_to_pydantic
 from src.providers.black_blaze_bucket_file import BlackBlazeBucketFile
 from nest.core.decorators.database import db_request_handler
@@ -32,7 +33,7 @@ class RecognitionService:
         update_recognition.data = {"url": url}
         await update_recognition.save()
         
-        return mongo_recognition_to_pydantic(update_recognition)
+        return Recognition(**mongo_recognition_to_pydantic(update_recognition))
 
     @db_request_handler
     async def get_recognition(self):
@@ -54,10 +55,16 @@ class RecognitionService:
         return None
     
     @db_request_handler
-    async def update_status_recognition(self, id: str, status: str):        
-        if status == RecognitionStatus.COMPLETED or status == RecognitionStatus.FAILED:
-            result = await RecognitionEntity.get(id)
-            if result:
-                result.status = status
-                await result.save()
+    async def update_status_recognition(self, id: str, status: str):                
+        # validate status value
+        if status not in RecognitionStatus.__members__:
+            return StatusNotRecognized()
+        
+        result = await RecognitionEntity.get(id)
+        if result:
+            result.set(expression="status", value=status)               
+            await result.save()
+        else:
+            raise RecognitionNotFound()
+
     
