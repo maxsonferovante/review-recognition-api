@@ -31,7 +31,8 @@ class RecognitionService:
         update_recognition = await RecognitionEntity.get(recognition.id)
         update_recognition.data = {"url": url}
         await update_recognition.save()
-        return recognition
+        
+        return mongo_recognition_to_pydantic(update_recognition)
 
     @db_request_handler
     async def get_recognition(self):

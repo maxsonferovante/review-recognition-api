@@ -3,8 +3,8 @@ from nest.core import Controller, Get, Post
 from fastapi import UploadFile
 from .recognition_service import RecognitionService
 from .recognition_model import Recognition
-from .recognition_exceptions import
 from .recognition_http_response import AcceptedResponse, CompletedResponse
+from src.modules.recognition.recognition_http_response import AcceptedResponse, CompletedResponse
 
 @Controller("recognition")
 class RecognitionController:

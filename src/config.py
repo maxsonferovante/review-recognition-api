@@ -4,6 +4,7 @@ from nest.core.database.odm_provider import OdmProvider
 from src.modules.recognition.recognition_entity import Recognition
 from src.modules.review.review_entity import Review
 
+
 load_dotenv()
 config = OdmProvider(
     config_params={

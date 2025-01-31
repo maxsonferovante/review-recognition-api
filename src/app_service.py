@@ -1,6 +1,6 @@
 
 from nest.core import Injectable
-from .config import config, version
+from .config import version
 
 @Injectable
 class AppService:

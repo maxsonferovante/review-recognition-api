@@ -1,5 +1,4 @@
 import boto3
-import os
 from botocore.exceptions import ClientError
 from nest.core import Injectable
 from src.config import configs_bucket
@@ -84,9 +83,7 @@ class BlackBlazeBucketFile:
                 Key=f"{self.configs['upload_folder']}/{recognition_id}/{file_name}",
                 UploadId=upload_id,
                 MultipartUpload={'Parts': upload_promises}
-            )
-            print("Upload completed successfully.")
-            #    'url': f"https://{os.getenv('BACKBLAZE_BUCKET')}.s3.{os.getenv('REGION')}.backblazeb2.com/{os.getenv('UPLOAD_FOLDER')}/{data['originalname']}",
+            )            
             url = f"https://{self.configs['bucket_name']}.s3.{self.configs['region']}.backblazeb2.com/{self.configs['upload_folder']}/{recognition_id}/{file_name}"
             return url
 
