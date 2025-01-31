@@ -8,7 +8,7 @@ from .review_model import Review
 class ReviewController:
 
     def __init__(self, review_service: ReviewService):
-        self.service = service
+        self.service = review_service
 
     @Get("/")
     async def get_review(self):
