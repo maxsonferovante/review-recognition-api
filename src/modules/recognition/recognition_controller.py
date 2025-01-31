@@ -17,10 +17,11 @@ class RecognitionController:
           
     @Get("/")
     async def get_recognition(self) -> List[Recognition]:
-        return await self.recognition_service.get_recognition()
+        response = await self.recognition_service.get_recognition()
+        return CompletedResponse(content=response)
     
     @Get("/{id}/status")
-    async def get_recognition_by_id(self, id: str) -> ProcessingRecognition or RecognitionNotFound:
+    async def get_recognition_by_id(self, id: str) -> ProcessingRecognition:
 
         recognition_status = self.character_recognition_service.get_status(id)
         if not recognition_status:
@@ -31,7 +32,7 @@ class RecognitionController:
         return ProcessingResponse(content=recognition_status)
     
     @Get("/{id}/results")
-    async def get_recognition_results_by_id(self, id: str) -> CompletedRecognition or RecognitionNotFound:
+    async def get_recognition_results_by_id(self, id: str) -> CompletedRecognition:
         recognition = self.character_recognition_service.get_results(id)
         if not recognition:
             raise RecognitionNotFound()

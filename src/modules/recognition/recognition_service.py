@@ -55,7 +55,7 @@ class RecognitionService:
             
         for recognitionDocument in result:
             recognitionDict = mongo_recognition_to_pydantic(recognitionDocument)                
-            list_recognition.append(Recognition(**recognitionDict))  
+            list_recognition.append(Recognition(**recognitionDict).dict())  
             
         return list_recognition                
 
