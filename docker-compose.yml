@@ -1,12 +1,28 @@
-version: "3.5"
-
 services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+
+    environment:
+      - TZ=America/Sao_Paulo
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - DB_USER=root
+      - DB_PASS=root
+
   mongo:
-    image: mongo
+    image: mongo:latest
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
-    
     ports:
       - 27017:27017
