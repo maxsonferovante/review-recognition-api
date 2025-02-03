@@ -1,3 +1,4 @@
+from src.messaging.sqs_aws import SqsAws
 from src.modules.recognition.recognition_exceptions import RecognitionNotFound, StatusNotRecognized
 from .recognition_model import Recognition, RecognitionStatus
 from .recognition_entity import Recognition as RecognitionEntity
@@ -11,8 +12,9 @@ from fastapi import UploadFile
 @Injectable
 class RecognitionService:
     
-    def __init__(self,updateBucketFile: BlackBlazeBucketFile):
+    def __init__(self,updateBucketFile: BlackBlazeBucketFile, messaging: SqsAws):
         self.updateBucketFile = updateBucketFile
+        self.messaging = messaging
     
     @db_request_handler
     async def add_recognition(self, file: UploadFile) -> Recognition:
@@ -33,6 +35,16 @@ class RecognitionService:
         update_recognition.data = {"url": url}
         await update_recognition.save()
         
+        # send message to queue
+
+        self.messaging.send_message(
+            message= {
+                "recognition_id": recognition.id,
+                "file_name": recognition.file_name,
+                "extension": recognition.extension,
+                "path_file": url
+            })
+
         return Recognition(**mongo_recognition_to_pydantic(update_recognition))
 
     @db_request_handler
