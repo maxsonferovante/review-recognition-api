@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 from nest.core.database.odm_provider import OdmProvider
 from src.modules.recognition.recognition_entity import Recognition
@@ -29,3 +30,17 @@ configs_bucket = {
     'bucket_name' : os.getenv('BACKBLAZE_BUCKET'),
     'region' : os.getenv('REGION'),
 }
+
+configs_queue = {
+    'queue_url' : os.getenv('QUEUE_URL'),
+    'region' : os.getenv('REGION_SQS'),
+    'key_id' : os.getenv('KEY_ACCESS'),
+    'app_key' : os.getenv('KEY_SECRET'),
+}
+
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
